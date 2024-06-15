@@ -2,6 +2,7 @@
 //#include <unistd.h>
 #include <windows.h>
 #include <conio.h>
+#include <random>
 
 using namespace std;
 
@@ -16,6 +17,9 @@ int repX[100], repY[100];
 int nRep;
 enum Direkcija {STOP = 0, LEVO, DESNO, GORE, DOLE}; // Zasluzno za pomeranje zmije
 Direkcija dir;
+
+random_device rd; // Nasumicni brojevi izmedju 0, 20 na c++ nacin
+uniform_int_distribution<int> dist(1, 19);
 
 void menjajBoju(int desiredColor){ 
      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), desiredColor);}
@@ -38,8 +42,8 @@ void Setup(){
     dir = STOP;
     x = sirina / 2;
     y = visina / 2;
-    vockaX = rand() %  sirina; //TO DO: Uradeti random sa boljim nacinom
-    vockaY = rand() %  visina;
+    vockaX = dist(rd);
+    vockaY = dist(rd);
     score = 0;
 
     ifstream citanje;
@@ -144,14 +148,14 @@ void Logika(){
         default:
             break;
     }
-    if(x > sirina || x < 0 || y > visina || y < 0){krajIgre = true; menjajBoju(4); cout << '\n' << "Zmija je udarila u zid!"; menjajBoju(7);} // Ako zmija udari neku # igrica se prekida
-    for(int i = 0; i < nRep; i++)if(repX[i] == x && repY[i] == y){krajIgre = true; menjajBoju(4); cout << '\n' << "Zmija je udarila u samu sebe!"; menjajBoju(7);}// Ako zmija udari u samu sebe igra se prekida
+    if(x > sirina || x < 0 || y > visina || y < 0){krajIgre = true; menjajBoju(4); cout << '\n' << "Zmija je udarila u zid!" << '\n'; menjajBoju(7);} // Ako zmija udari neku # igrica se prekida
+    for(int i = 0; i < nRep; i++)if(repX[i] == x && repY[i] == y){krajIgre = true; menjajBoju(4); cout << '\n' << "Zmija je udarila u samu sebe!" << '\n';  menjajBoju(7);}// Ako zmija udari u samu sebe igra se prekida
     if(x == vockaX && y == vockaY) // Ako su x i y kordinate zmije jendako x i y kordinati vocke onda se rezultat poveca za 1 i nova vocka se pravi
     {
 
         score++;
-        vockaX = rand() % sirina;
-        vockaY = rand() % visina;
+        vockaX = dist(rd);
+        vockaY = dist(rd);
         nRep++;
 
     }
@@ -176,6 +180,6 @@ int main() {
 
     if(krajIgre == true){citanje.open("Rezultat.txt"); int maks; citanje >> maks; citanje.close(); // Ovde se proverava da li je trenutni rezultat veci od prethodnog maksimuma, ako jeste upisuje se trentuni rezultat
     if(score > maks){upis.open("Rezultat.txt"); upis << score; upis.close();}}
-
+    system("pause");
 
 }
